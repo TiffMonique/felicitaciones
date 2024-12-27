@@ -75,7 +75,7 @@ const WishText = ({ sender }: WishTextProps) => {
               repeatType: "reverse",
             }}
           >
-            Con cariño, {sender}
+            Con cariño, {sender.replace(/ /g, "\u00A0")}
           </motion.p>
         </motion.div>
       )}

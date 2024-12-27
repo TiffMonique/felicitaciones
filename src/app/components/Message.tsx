@@ -28,7 +28,13 @@ const Message = ({ sender }: MessageProps) => {
     return () => clearInterval(timer);
   }, []);
 
-  const senderLetters = sender ? sender.toUpperCase().split("") : [];
+  const senderLetters = sender
+    ? sender
+        .toUpperCase()
+        .split("")
+        .map((char) => (char === " " ? "\u00A0" : char))
+    : [];
+
   const colors = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#FF8B94", "#4ECDC4"];
 
   return (
