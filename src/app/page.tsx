@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { StarryBackground } from "./components/StarryBackground";
 import Message from "./components/Message";
@@ -34,6 +34,23 @@ function ClientContent() {
   const [sender, setSender] = useState("");
   const [showShare, setShowShare] = useState(false);
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.volume = 0.3;
+        audioRef.current.play().catch((error: DOMException) => {
+          console.log("Error al reproducir audio:", error);
+        });
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   useEffect(() => {
     const urlSender = searchParams.get("n");
     const urlShare = searchParams.get("share");
@@ -42,6 +59,15 @@ function ClientContent() {
       setShowShare(urlShare === "true");
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.3;
+      audioRef.current.play().catch((error: Error) => {
+        console.log("Error al reproducir audio:", error);
+      });
+    }
+  }, []);
 
   const handleCreateMessage = (name: string) => {
     router.push(`/?n=${encodeURIComponent(name)}&share=true`);
@@ -54,6 +80,14 @@ function ClientContent() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
+      <audio ref={audioRef} loop src="/audio.mp3" />
+      <button
+        onClick={toggleAudio}
+        className="fixed bottom-4 right-4 z-50 bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all"
+        aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
+      >
+        {isPlaying ? "🔇" : "🔊"}
+      </button>
       <div className="relative z-20">
         {/* <TopAdBanner /> */}
 
