@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import StarryBackground from "./components/StarryBackground";
+import { StarryBackground } from "./components/StarryBackground";
 import Message from "./components/Message";
 import MainImage from "./components/MainImage";
 import AnimatedNumbers from "./components/AnimatedNumbers";
@@ -12,6 +12,23 @@ import ShareButtons from "./components/ShareButtons";
 import { TopAdBanner, BottomAdBanner } from "./components/AdBanners";
 
 export default function Home() {
+  return (
+    <div className="relative min-h-screen bg-black overflow-hidden">
+      <StarryBackground />
+      <Suspense
+        fallback={
+          <div className="relative z-20 flex items-center justify-center min-h-screen">
+            <div className="text-white">Cargando...</div>
+          </div>
+        }
+      >
+        <ClientContent />
+      </Suspense>
+    </div>
+  );
+}
+
+function ClientContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [sender, setSender] = useState("");
@@ -37,8 +54,6 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <StarryBackground />
-
       <div className="relative z-20">
         <TopAdBanner />
 
