@@ -7,6 +7,7 @@ import { AdSpace } from './components/AdSpace'
 import { RainbowText } from './components/RainbowText'
 import { Countdown } from './components/Countdown'
 import { CreateMessageButton } from './components/CreateMessageButtonProps'
+import { launchConfetti } from './components/Confetti'
 
 
 export default function AnoNuevo2025() {
@@ -14,6 +15,7 @@ export default function AnoNuevo2025() {
 
   const handleSubmit = (name: string) => {
     setSender(name)
+    launchConfetti()
   }
 
   return (
