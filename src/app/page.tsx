@@ -70,7 +70,9 @@ function ClientContent() {
         {showShare ? (
           <ShareButtons
             sender={sender}
-            url={`https://anionuevo2025.com/?n=${encodeURIComponent(sender)}`}
+            url={`https://felicitaciones.vercel.app/?n=${encodeURIComponent(
+              sender
+            )}`}
             onClose={handleCloseShare}
           />
         ) : (
