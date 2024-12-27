@@ -45,8 +45,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   onClose,
 }) => {
   const whatsappMessage = encodeURIComponent(
-    `¡Sorpresa! 🎉✨ *${sender}* te ha enviado un mensaje especial de Año Nuevo 2025. 🎊🥳 Descúbrelo aquí:
-    ${url}`
+    `¡Sorpresa! 🎉✨ *${sender}* te ha enviado un mensaje especial de Año Nuevo 2025. 🎊🥳 Descúbrelo aquí: ${url}`
   );
   const whatsappUrl = `https://api.whatsapp.com/send?text=${whatsappMessage}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
