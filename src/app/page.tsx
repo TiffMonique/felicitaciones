@@ -9,7 +9,7 @@ import AnimatedNumbers from "./components/AnimatedNumbers";
 import WishText from "./components/WishText";
 import MessageForm from "./components/MessageForm";
 import ShareButtons from "./components/ShareButtons";
-import { TopAdBanner, BottomAdBanner } from "./components/AdBanners";
+// import { TopAdBanner, BottomAdBanner } from "./components/AdBanners";
 
 export default function Home() {
   return (
@@ -55,7 +55,7 @@ function ClientContent() {
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
       <div className="relative z-20">
-        <TopAdBanner />
+        {/* <TopAdBanner /> */}
 
         <main className="container mx-auto px-4 sm:px-16 pt-2 sm:pt-4 pb-32 sm:pb-40">
           <Message sender={sender} />
@@ -64,7 +64,7 @@ function ClientContent() {
           <div className="mt-4 sm:mt-6">
             <WishText sender={sender} />
           </div>
-          <BottomAdBanner />
+          {/* <BottomAdBanner /> */}
         </main>
 
         {showShare ? (
