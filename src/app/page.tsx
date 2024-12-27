@@ -41,13 +41,28 @@ function ClientContent() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
       } else {
-        audioRef.current.volume = 0.3;
-        audioRef.current.play().catch((error: DOMException) => {
-          console.log("Error al reproducir audio:", error);
-        });
+        // Reiniciar el audio si ha terminado
+        if (audioRef.current.currentTime > 0) {
+          audioRef.current.currentTime = 0;
+        }
+
+        audioRef.current.volume = 0.5;
+        const playPromise = audioRef.current.play();
+
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+              console.log("Audio reproduciendo exitosamente");
+            })
+            .catch((error: DOMException) => {
+              console.log("Error al reproducir audio:", error);
+              setIsPlaying(false);
+            });
+        }
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -61,12 +76,17 @@ function ClientContent() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = 0.3;
-      audioRef.current.play().catch((error: Error) => {
-        console.log("Error al reproducir audio:", error);
-      });
-    }
+    const audioElement = audioRef.current;
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+    };
+
+    audioElement?.addEventListener("ended", handleEnded);
+
+    return () => {
+      audioElement?.removeEventListener("ended", handleEnded);
+    };
   }, []);
 
   const handleCreateMessage = (name: string) => {
@@ -80,13 +100,27 @@ function ClientContent() {
 
   return (
     <div className="relative min-h-screen bg-black overflow-hidden">
-      <audio ref={audioRef} loop src="/audio.mp3" />
+      <audio
+        ref={audioRef}
+        src="/audio.mp3"
+        loop
+        preload="auto"
+        onError={(e) => console.log("Error en el elemento audio:", e)}
+      />
       <button
         onClick={toggleAudio}
-        className="fixed bottom-4 right-4 z-50 bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all"
+        className="fixed bottom-24 right-4 z-50 bg-white/25 hover:bg-white/40 p-4 rounded-full 
+    transition-all duration-300 transform hover:scale-110 
+    animate-bounce shadow-lg shadow-white/10 border border-white/20
+    backdrop-blur-sm flex flex-col items-center gap-2"
         aria-label={isPlaying ? "Pausar música" : "Reproducir música"}
       >
-        {isPlaying ? "🔇" : "🔊"}
+        <span className="text-2xl">{isPlaying ? "🔇" : "🎵"}</span>
+        {!isPlaying && (
+          <span className="text-xs text-white font-medium whitespace-nowrap px-1">
+            Click para música
+          </span>
+        )}
       </button>
       <div className="relative z-20">
         {/* <TopAdBanner /> */}
