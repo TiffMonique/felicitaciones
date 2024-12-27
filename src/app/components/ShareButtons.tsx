@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { trackEvent } from "../lib/utils";
 
 interface ShareButtonsProps {
   sender: string;
@@ -44,6 +45,22 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   url,
   onClose,
 }) => {
+  const handleWhatsAppShare = () => {
+    trackEvent("Share Click", {
+      platform: "whatsapp",
+      sender: sender,
+      url: url,
+    });
+  };
+
+  const handleFacebookShare = () => {
+    trackEvent("Share Click", {
+      platform: "facebook",
+      sender: sender,
+      url: url,
+    });
+  };
+
   const whatsappMessage = encodeURIComponent(
     `¡Sorpresa! 🎉✨ *${sender}* te ha enviado un mensaje especial de Año Nuevo 2025. 🎊🥳 Descúbrelo aquí: ${url}`
   );
@@ -62,6 +79,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
       <div className="max-w-md mx-auto space-y-3">
         <motion.a
           href={whatsappUrl}
+          onClick={handleWhatsAppShare}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-3 w-full py-2.5 px-4 bg-[#25D366] text-white rounded-lg font-medium transition-colors hover:bg-[#22c55e]"
@@ -73,6 +91,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
         </motion.a>
         <motion.a
           href={facebookUrl}
+          onClick={handleFacebookShare}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-3 w-full py-2.5 px-4 bg-[#1877F2] text-white rounded-lg font-medium transition-colors hover:bg-[#1664d4]"

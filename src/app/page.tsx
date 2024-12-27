@@ -9,6 +9,8 @@ import AnimatedNumbers from "./components/AnimatedNumbers";
 import WishText from "./components/WishText";
 import MessageForm from "./components/MessageForm";
 import ShareButtons from "./components/ShareButtons";
+import { trackEvent } from "./lib/utils";
+
 // import { TopAdBanner, BottomAdBanner } from "./components/AdBanners";
 
 export default function Home() {
@@ -42,6 +44,10 @@ function ClientContent() {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
+        trackEvent("Audio Interaction", {
+          action: "pause",
+          currentTime: audioRef.current.currentTime,
+        });
       } else {
         // Reiniciar el audio si ha terminado
         if (audioRef.current.currentTime > 0) {
@@ -55,11 +61,18 @@ function ClientContent() {
           playPromise
             .then(() => {
               setIsPlaying(true);
+              trackEvent("Audio Interaction", {
+                action: "play",
+                currentTime: audioRef?.current?.currentTime,
+              });
               console.log("Audio reproduciendo exitosamente");
             })
             .catch((error: DOMException) => {
               console.log("Error al reproducir audio:", error);
               setIsPlaying(false);
+              trackEvent("Audio Error", {
+                error: error.message,
+              });
             });
         }
       }
@@ -88,6 +101,13 @@ function ClientContent() {
       audioElement?.removeEventListener("ended", handleEnded);
     };
   }, []);
+
+  useEffect(() => {
+    trackEvent("Page View", {
+      sender: sender || "no_sender",
+      has_share: showShare,
+    });
+  }, [sender, showShare]);
 
   const handleCreateMessage = (name: string) => {
     router.push(`/?n=${encodeURIComponent(name)}&share=true`);
