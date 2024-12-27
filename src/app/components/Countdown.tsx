@@ -1,65 +1,70 @@
-'use client'
+"use client";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+const CountdownUnit = ({ value, label }: { value: number; label: string }) => (
+  <motion.div
+    className="flex flex-col items-center mx-2"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+  >
+    <motion.span
+      className="text-3xl font-bold"
+      style={{
+        color:
+          label === "día"
+            ? "#FF6B6B"
+            : label === "h"
+            ? "#4ECDC4"
+            : label === "min"
+            ? "#FFD93D"
+            : "#FF8B94",
+      }}
+    >
+      {value}
+    </motion.span>
+    <span className="text-sm text-gray-300">{label}</span>
+  </motion.div>
+);
 
-export function Countdown() {
+const Countdown = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
-  })
+    seconds: 0,
+  });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date()
-      const newYear = new Date(2025, 0, 1)
-      const diff = newYear.getTime() - now.getTime()
+    const targetDate = new Date("2025-01-01T00:00:00");
 
-      setTimeLeft({
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((diff % (1000 * 60)) / 1000)
-      })
-    }, 1000)
+    const updateCountdown = () => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
 
-    return () => clearInterval(timer)
-  }, [])
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      setTimeLeft({ days, hours, minutes, seconds });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="flex justify-center gap-2 text-xl">
-      <motion.span
-        className="text-yellow-300"
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-      >
-        {timeLeft.days} días
-      </motion.span>
-      <motion.span
-        className="text-green-400"
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-      >
-        {timeLeft.hours} hrs
-      </motion.span>
-      <motion.span
-        className="text-blue-400"
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-      >
-        {timeLeft.minutes} min
-      </motion.span>
-      <motion.span
-        className="text-pink-400"
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 1, repeat: Infinity, delay: 0.6 }}
-      >
-        {timeLeft.seconds} seg
-      </motion.span>
-      <span className="text-white">antes</span>
+    <div className="flex justify-center items-center space-x-1 mb-8">
+      <CountdownUnit value={timeLeft.days} label="día" />
+      <CountdownUnit value={timeLeft.hours} label="h" />
+      <CountdownUnit value={timeLeft.minutes} label="min" />
+      <CountdownUnit value={timeLeft.seconds} label="seg" />
+      <span className="text-gray-400 ml-2">antes</span>
     </div>
-  )
-}
+  );
+};
 
+export default Countdown;

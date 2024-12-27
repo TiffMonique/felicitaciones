@@ -1,83 +1,67 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { StarryBackground } from './components/StarryBackground'
-import { AdSpace } from './components/AdSpace'
-import { RainbowText } from './components/RainbowText'
-import { Countdown } from './components/Countdown'
-import { CreateMessageButton } from './components/CreateMessageButtonProps'
-import { launchConfetti } from './components/Confetti'
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import StarryBackground from "./components/StarryBackground";
+import Message from "./components/Message";
+import MainImage from "./components/MainImage";
+import AnimatedNumbers from "./components/AnimatedNumbers";
+import WishText from "./components/WishText";
+import MessageForm from "./components/MessageForm";
+import ShareButtons from "./components/ShareButtons";
+import { TopAdBanner, BottomAdBanner } from "./components/AdBanners";
 
+export default function Home() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [sender, setSender] = useState("");
+  const [showShare, setShowShare] = useState(false);
 
-export default function AnoNuevo2025() {
-  const [sender, setSender] = useState<string | null>(null)
+  useEffect(() => {
+    const urlSender = searchParams.get("n");
+    const urlShare = searchParams.get("share");
+    if (urlSender) {
+      setSender(urlSender);
+      setShowShare(urlShare === "true");
+    }
+  }, [searchParams]);
 
-  const handleSubmit = (name: string) => {
-    setSender(name)
-    launchConfetti()
-  }
+  const handleCreateMessage = (name: string) => {
+    router.push(`/?n=${encodeURIComponent(name)}&share=true`);
+  };
+
+  const handleCloseShare = () => {
+    setShowShare(false);
+    router.push("/");
+  };
 
   return (
-    <div className="min-h-screen relative overflow-hidden text-white">
+    <div className="relative min-h-screen bg-black overflow-hidden">
       <StarryBackground />
 
-      <div className="container mx-auto px-4 pt-4 pb-32">
-        <AdSpace position="top" />
+      <div className="relative z-20">
+        <TopAdBanner />
 
-        <div className="max-w-md mx-auto text-center space-y-8">
-          {sender ? (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="mb-4"
-            >
-              <RainbowText text={sender} className="mb-2" />
-              <motion.p
-                className="text-2xl text-yellow-300"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                deseándote
-              </motion.p>
-            </motion.div>
-          ) : null}
+        <main className="container mx-auto px-4 sm:px-16 pt-2 sm:pt-4 pb-32 sm:pb-40">
+          <Message sender={sender} />
+          <MainImage />
+          <AnimatedNumbers />
+          <div className="mt-4 sm:mt-6">
+            <WishText sender={sender} />
+          </div>
+          <BottomAdBanner />
+        </main>
 
-          <Countdown />
-
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-500 via-yellow-500 to-cyan-500 text-transparent bg-clip-text">
-              Feliz Año
-              <br />
-              Nuevo 2025
-            </h1>
-          </motion.div>
-
-          {sender ? (
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="space-y-8"
-            >
-              <p className="text-xl leading-relaxed">
-                Te envío mis mejores deseos
-                <br />
-                de casa a casa y
-                <br />
-                <span className="text-red-400">de corazón a corazón</span>
-              </p>
-
-              <AdSpace position="bottom" />
-            </motion.div>
-          ) : null}
-        </div>
+        {showShare ? (
+          <ShareButtons
+            sender={sender}
+            url={`https://anionuevo2025.com/?n=${encodeURIComponent(sender)}`}
+            onClose={handleCloseShare}
+          />
+        ) : (
+          <MessageForm onSubmit={handleCreateMessage} />
+        )}
       </div>
-
-      <CreateMessageButton onSubmit={handleSubmit} />
     </div>
-  )
+  );
 }
